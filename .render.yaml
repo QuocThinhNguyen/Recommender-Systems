@@ -1,0 +1,13 @@
+services:
+  - type: python
+    name: doctor-recommender
+    buildCommand: ""
+    startCommand: "python predict.py"
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FRONTEND_URL
+        value: http://localhost:5173
+      - key: BACKEND_URL
+        value: http://localhost:9000
+    plan: free
