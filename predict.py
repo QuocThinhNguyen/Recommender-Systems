@@ -80,26 +80,26 @@ def recommend():
         "data": results
     })
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
-def plot_predictions(predictions):
-    doctor_ids = [str(doc_id) for doc_id, _ in predictions]
-    scores = [round(score, 2) for _, score in predictions]
+# def plot_predictions(predictions):
+#     doctor_ids = [str(doc_id) for doc_id, _ in predictions]
+#     scores = [round(score, 2) for _, score in predictions]
 
-    plt.figure(figsize=(10, 6))
-    bars = plt.bar(doctor_ids, scores, color='lightgreen')
-    plt.title('Top Recommended Doctors')
-    plt.xlabel('Doctor ID')
-    plt.ylabel('Predicted Rating')
-    plt.ylim(0, 6)
+#     plt.figure(figsize=(10, 6))
+#     bars = plt.bar(doctor_ids, scores, color='lightgreen')
+#     plt.title('Top Recommended Doctors')
+#     plt.xlabel('Doctor ID')
+#     plt.ylabel('Predicted Rating')
+#     plt.ylim(0, 6)
 
-    for bar, score in zip(bars, scores):
-        yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width() / 2, yval + 0.1, f'{score}', ha='center', va='bottom')
+#     for bar, score in zip(bars, scores):
+#         yval = bar.get_height()
+#         plt.text(bar.get_x() + bar.get_width() / 2, yval + 0.1, f'{score}', ha='center', va='bottom')
 
-    plt.tight_layout()
-    plt.savefig("recommendation_chart.png")
-    plt.close()
+#     plt.tight_layout()
+#     plt.savefig("recommendation_chart.png")
+#     plt.close()
 
 
 if __name__ == '__main__':
