@@ -23,7 +23,7 @@ def recommend():
     patient_id = request.json.get("patient_id")
 
     BASE_API_URL = os.environ.get("BACKEND_URL")
-    print("BASE_API_URL:", BASE_API_URL)
+    # print("BASE_API_URL:", BASE_API_URL)
 
     url = f"{BASE_API_URL}/user/suggestions?limit=100"
     response = requests.get(url)
@@ -34,11 +34,12 @@ def recommend():
 
     data = response.json()['data']
 
-    print(data) 
+    # print(data) 
 
     df = preprocess_data(data)
 
     all_doctor_ids = df['doctor_id'].unique().tolist()
+    # print("All doctor IDs:", all_doctor_ids)
     known_doctor_ids = df[df['patient_id'] == patient_id]['doctor_id'].tolist()
     unseen_doctor_ids = [doc_id for doc_id in all_doctor_ids if doc_id not in known_doctor_ids]
 
@@ -46,7 +47,7 @@ def recommend():
     top_specialty = None
     if not specialty_df.empty:
         top_specialty = specialty_df.groupby('specialty_id')[['visits','click_count']].sum().sum(axis=1).idxmax()
-
+    print("Top specialty ID:", top_specialty)
     top_specialty_doctors = df[df['specialty_id'] == top_specialty]['doctor_id'].unique().tolist()
 
     predictions = []
@@ -62,11 +63,11 @@ def recommend():
         if pd.notnull(recent_date):
             recent_date = recent_date.tz_localize(None) 
             days_ago = (datetime.now() - recent_date).days
-            recent_bonus = max(0, (30 - days_ago) / 30) * 0.2
+            recent_bonus = max(0, (30 - days_ago) / 30) * 0.1
             bonus += recent_bonus
 
         if doc_id not in known_doctor_ids:
-            bonus += 0.1
+            bonus += 0.15
 
         predictions.append((doc_id, pred.est + bonus))
 
@@ -100,6 +101,33 @@ def recommend():
 #     plt.tight_layout()
 #     plt.savefig("recommendation_chart.png")
 #     plt.close()
+
+from surprise import accuracy
+
+@app.route("/evaluate", methods=["GET"])
+def evaluate():
+    BASE_API_URL = os.environ.get("BACKEND_URL")
+    url = f"{BASE_API_URL}/user/suggestions?limit=100"
+    response = requests.get(url)
+    data = response.json()['data']
+
+    df = preprocess_data(data)
+
+    reader = Reader(rating_scale=(0, 5))
+    dataset = Dataset.load_from_df(df[['patient_id', 'doctor_id', 'rating']], reader)
+    trainset = dataset.build_full_trainset()
+
+    predictions = model.test(trainset.build_testset())
+
+    rmse = accuracy.rmse(predictions)
+    mae = accuracy.mae(predictions)
+
+    return jsonify({
+        "status": 200,
+        "message": "Evaluation success",
+        "rmse": round(rmse, 4),
+        "mae": round(mae, 4)
+    })
 
 
 if __name__ == '__main__':

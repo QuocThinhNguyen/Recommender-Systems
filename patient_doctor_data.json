@@ -1,5 +1,167 @@
 [
     {
+        "patient_id": 12,
+        "doctor_id": 6,
+        "specialty_id": 6,
+        "rating": "5.0",
+        "visits": 1,
+        "last_visit_date": "2025-05-02T00:00:00.000Z",
+        "click_count": 0
+    },
+    {
+        "patient_id": 12,
+        "doctor_id": 7,
+        "specialty_id": 7,
+        "rating": "5.0",
+        "visits": 2,
+        "last_visit_date": "2025-05-02T00:00:00.000Z",
+        "click_count": 2
+    },
+    {
+        "patient_id": 12,
+        "doctor_id": 9,
+        "specialty_id": 8,
+        "rating": "5.0",
+        "visits": 1,
+        "last_visit_date": "2025-05-02T00:00:00.000Z",
+        "click_count": 1
+    },
+    {
+        "patient_id": 42,
+        "doctor_id": 9,
+        "specialty_id": 8,
+        "rating": "5.0",
+        "visits": 3,
+        "last_visit_date": "2025-05-02T00:00:00.000Z",
+        "click_count": 7
+    },
+    {
+        "patient_id": 42,
+        "doctor_id": 7,
+        "specialty_id": 7,
+        "rating": "5.0",
+        "visits": 1,
+        "last_visit_date": "2025-05-02T00:00:00.000Z",
+        "click_count": 2
+    },
+    {
+        "patient_id": 44,
+        "doctor_id": 6,
+        "specialty_id": 6,
+        "rating": "5.0",
+        "visits": 1,
+        "last_visit_date": "2025-05-02T00:00:00.000Z",
+        "click_count": 3
+    },
+    {
+        "patient_id": 44,
+        "doctor_id": 7,
+        "specialty_id": 7,
+        "rating": "5.0",
+        "visits": 1,
+        "last_visit_date": "2025-05-02T00:00:00.000Z",
+        "click_count": 2
+    },
+    {
+        "patient_id": 44,
+        "doctor_id": 8,
+        "specialty_id": 8,
+        "rating": "5.0",
+        "visits": 1,
+        "last_visit_date": "2025-05-02T00:00:00.000Z",
+        "click_count": 1
+    },
+    {
+        "patient_id": 12,
+        "doctor_id": 2,
+        "specialty_id": 4,
+        "rating": "5.0",
+        "visits": 1,
+        "last_visit_date": "2025-05-01T00:00:00.000Z",
+        "click_count": 4
+    },
+    {
+        "patient_id": 12,
+        "doctor_id": 3,
+        "specialty_id": 4,
+        "rating": "4.7",
+        "visits": 1,
+        "last_visit_date": "2025-05-01T00:00:00.000Z",
+        "click_count": 3
+    },
+    {
+        "patient_id": 12,
+        "doctor_id": 4,
+        "specialty_id": 5,
+        "rating": "5.0",
+        "visits": 1,
+        "last_visit_date": "2025-05-01T00:00:00.000Z",
+        "click_count": 3
+    },
+    {
+        "patient_id": 45,
+        "doctor_id": 5,
+        "specialty_id": 6,
+        "rating": "4.7",
+        "visits": 3,
+        "last_visit_date": "2025-05-01T00:00:00.000Z",
+        "click_count": 3
+    },
+    {
+        "patient_id": 44,
+        "doctor_id": 2,
+        "specialty_id": 4,
+        "rating": "5.0",
+        "visits": 1,
+        "last_visit_date": "2025-04-30T00:00:00.000Z",
+        "click_count": 0
+    },
+    {
+        "patient_id": 44,
+        "doctor_id": 3,
+        "specialty_id": 4,
+        "rating": "4.7",
+        "visits": 2,
+        "last_visit_date": "2025-04-30T00:00:00.000Z",
+        "click_count": 0
+    },
+    {
+        "patient_id": 44,
+        "doctor_id": 9,
+        "specialty_id": 8,
+        "rating": "5.0",
+        "last_visit_date": null,
+        "visits": 0,
+        "click_count": 1
+    },
+    {
+        "patient_id": 44,
+        "doctor_id": 15,
+        "specialty_id": 5,
+        "rating": 0,
+        "last_visit_date": null,
+        "visits": 0,
+        "click_count": 1
+    },
+    {
+        "patient_id": 45,
+        "doctor_id": 6,
+        "specialty_id": 6,
+        "rating": "5.0",
+        "last_visit_date": null,
+        "visits": 0,
+        "click_count": 1
+    },
+    {
+        "patient_id": 44,
+        "doctor_id": 11,
+        "specialty_id": 10,
+        "rating": 0,
+        "last_visit_date": null,
+        "visits": 0,
+        "click_count": 1
+    },
+    {
         "patient_id": 383,
         "doctor_id": 9,
         "specialty_id": 4,
