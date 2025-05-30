@@ -114,6 +114,7 @@ def evaluate():
     df = preprocess_data(data)
 
     reader = Reader(rating_scale=(0, 5))
+    df = df.dropna(subset=['rating'])
     dataset = Dataset.load_from_df(df[['patient_id', 'doctor_id', 'rating']], reader)
     trainset = dataset.build_full_trainset()
 
