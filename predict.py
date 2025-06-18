@@ -21,33 +21,73 @@ with open("svd_model.pkl", "rb") as f:
 @cross_origin(origins=[os.environ.get("FRONTEND_URL")], supports_credentials=True)
 def recommend():
     patient_id = request.json.get("patient_id")
+    specialist_symptoms = request.json.get("specialist_symptoms") or []
+
+    print("patient_id:", patient_id)
+    print("specialist_symptoms:", specialist_symptoms)    
 
     BASE_API_URL = os.environ.get("BACKEND_URL")
-    # print("BASE_API_URL:", BASE_API_URL)
-
-    url = f"{BASE_API_URL}/user/suggestions?limit=100"
+    url = f"{BASE_API_URL}/user/suggestions?limit=500"
     response = requests.get(url)
-    if response:
-        print("Data fetched successfully from the external service.")
-    else:
-        print("Failed to fetch data from the external service.")
+    if not response:
+        return jsonify({"status": 500, "message": "Failed to fetch data"}), 500
 
     data = response.json()['data']
-
-    # print(data) 
-
+    # print("Check get data:",data)
     df = preprocess_data(data)
-
+    
+    df['last_visit_date'] = pd.to_datetime(df['last_visit_date'], errors='coerce')
     all_doctor_ids = df['doctor_id'].unique().tolist()
-    # print("All doctor IDs:", all_doctor_ids)
+    print("Check all_doctor_ids:", all_doctor_ids)
     known_doctor_ids = df[df['patient_id'] == patient_id]['doctor_id'].tolist()
-    unseen_doctor_ids = [doc_id for doc_id in all_doctor_ids if doc_id not in known_doctor_ids]
+    is_new_user = len(known_doctor_ids) == 0
 
+    results = []
+
+    # Trường hợp 1: Người dùng mới & không chọn chuyên khoa → fallback mặc định
+    if is_new_user and not specialist_symptoms:
+        print("=> Case: Cold start hoàn toàn - fallback")
+        top_doctors_df = (
+            df.groupby('doctor_id')[['visits', 'click_count']]
+            .sum()
+            .sum(axis=1)
+            .sort_values(ascending=False)
+            .head(8)
+        )
+        results = [{'doctor_id': int(doc_id), 'predicted_rating': 4.0} for doc_id in top_doctors_df.index]
+        print ("Check kết quả 1:", results)
+        return jsonify({
+            "status": 200,
+            "message": "Gợi ý mặc định cho người dùng mới chưa chọn chuyên khoa",
+            "data": results
+        })
+
+    # Trường hợp 2: Người dùng mới nhưng có chọn chuyên khoa → lọc bác sĩ theo chuyên khoa
+    if is_new_user and specialist_symptoms:
+        print("=> Case: Người dùng mới + có chọn chuyên khoa")
+        doctor_ids = df[df['specialty_id'].isin(specialist_symptoms)]['doctor_id'].unique().tolist()
+        top_doctors_df = (
+            df[df['doctor_id'].isin(doctor_ids)]
+            .groupby('doctor_id')[['visits', 'click_count']]
+            .sum()
+            .sum(axis=1)
+            .sort_values(ascending=False)
+            .head(8)
+        )
+        results = [{'doctor_id': int(doc_id), 'predicted_rating': 4.0} for doc_id in top_doctors_df.index]
+        print ("Check kết quả 2:", results)
+        return jsonify({
+            "status": 200,
+            "message": "Gợi ý theo chuyên khoa cho người dùng mới",
+            "data": results
+        })
+
+    # Trường hợp 3: Người dùng cũ
+    print("=> Case: Người dùng cũ")
     specialty_df = df[df['patient_id'] == patient_id]
     top_specialty = None
     if not specialty_df.empty:
         top_specialty = specialty_df.groupby('specialty_id')[['visits','click_count']].sum().sum(axis=1).idxmax()
-    print("Top specialty ID:", top_specialty)
     top_specialty_doctors = df[df['specialty_id'] == top_specialty]['doctor_id'].unique().tolist()
 
     predictions = []
@@ -55,10 +95,16 @@ def recommend():
         pred = model.predict(patient_id, doc_id)
         bonus = 0.0
 
+        # Ưu tiên bác sĩ cùng chuyên khoa từng khám
         if doc_id in top_specialty_doctors:
-            bonus += 0.4
+            bonus += 0.3
 
-        df['last_visit_date'] = pd.to_datetime(df['last_visit_date'], errors='coerce')
+        # Ưu tiên bác sĩ có chuyên khoa đang quan tâm
+        doctor_specialty = df[df['doctor_id'] == doc_id]['specialty_id'].iloc[0]
+        if doctor_specialty in specialist_symptoms:
+            bonus += 2
+
+        # Ưu tiên bác sĩ có khám gần đây
         recent_date = df[df['doctor_id'] == doc_id]['last_visit_date'].max()
         if pd.notnull(recent_date):
             recent_date = recent_date.tz_localize(None) 
@@ -66,20 +112,23 @@ def recommend():
             recent_bonus = max(0, (30 - days_ago) / 30) * 0.1
             bonus += recent_bonus
 
+        # Ưu tiên bác sĩ chưa từng khám
         if doc_id not in known_doctor_ids:
             bonus += 0.15
 
         predictions.append((doc_id, pred.est + bonus))
 
     predictions.sort(key=lambda x: x[1], reverse=True)
-    # plot_predictions(predictions[:8])  # Vẽ top 8 doctor được đề xuất
-
     results = [{'doctor_id': doc_id, 'predicted_rating': round(score, 2)} for doc_id, score in predictions[:8]]
+
+    print ("Check kết quả 3:", results)
+
     return jsonify({
         "status": 200,
-        "message": "Success",
+        "message": "Gợi ý cho người dùng cũ có lịch sử",
         "data": results
     })
+
 
 # import matplotlib.pyplot as plt
 

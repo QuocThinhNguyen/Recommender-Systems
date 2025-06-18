@@ -3,7 +3,7 @@ from surprise import Dataset, Reader, SVD
 from utils import preprocess_data
 import requests
 import json
-
+import pickle
 # url = "http://localhost:9000/user/suggestions"
 # response = requests.get(url)
 # if response:
@@ -32,7 +32,6 @@ trainset = dataset.build_full_trainset()
 model = SVD()
 model.fit(trainset)
 
-import pickle
 with open("svd_model.pkl", "wb") as f:
     pickle.dump(model, f)
 
