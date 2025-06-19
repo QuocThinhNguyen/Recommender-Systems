@@ -44,7 +44,7 @@ def recommend():
 
     results = []
 
-    # Trường hợp 1: Người dùng mới & không chọn chuyên khoa → fallback mặc định
+    # Trường hợp 1: Người dùng mới & không chọn chuyên khoa
     if is_new_user and not specialist_symptoms:
         print("=> Case: Cold start hoàn toàn - fallback")
         top_doctors_df = (
@@ -95,7 +95,7 @@ def recommend():
         pred = model.predict(patient_id, doc_id)
         bonus = 0.0
 
-        # Ưu tiên bác sĩ cùng chuyên khoa từng khám
+        # Ưu tiên bác sĩ cùng chuyên khoa tương tác nhiều gần đây
         if doc_id in top_specialty_doctors:
             bonus += 0.3
 
@@ -162,9 +162,9 @@ def evaluate():
 
     df = preprocess_data(data)
 
-    reader = Reader(rating_scale=(0, 5))
-    df = df.dropna(subset=['rating'])
-    dataset = Dataset.load_from_df(df[['patient_id', 'doctor_id', 'rating']], reader)
+    reader = Reader(rating_scale=(1, 5))
+    df = df.dropna(subset=['final_rating'])
+    dataset = Dataset.load_from_df(df[['patient_id', 'doctor_id', 'final_rating']], reader)
     trainset = dataset.build_full_trainset()
 
     predictions = model.test(trainset.build_testset())
